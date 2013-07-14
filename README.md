@@ -1,5 +1,5 @@
-currentcost_webinterface
-========================
+Current Cost Web Interface
+==========================
 
 A web interface to the current cost data.
 
