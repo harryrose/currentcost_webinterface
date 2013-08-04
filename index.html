@@ -43,8 +43,8 @@
 
 			var producePlots = function() {
 				$(".plot").each(function () {
-					var type = $(this).attr("bind-type");
-					var hours = $(this).attr("bind-hours");
+					var type = $(this).attr("data-type");
+					var hours = $(this).attr("data-hours");
 
 					if(type == undefined || hours == undefined)
 					{
@@ -65,7 +65,7 @@
 	</head>
 
 	<body>
-		<div id='elec24' class='plot' bind-type="electricity" bind-hours="24"/>
+		<div id='elec24' class='plot' data-type="electricity" data-hours="24"/>
 		</div>
 	</body>
 </html>
