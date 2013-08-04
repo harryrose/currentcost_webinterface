@@ -4,68 +4,50 @@
 		<title>Graphs</title>
 		<script src="scripts/jquery.js"></script>
 		<script src="scripts/dygraph.js"></script>
-
+		<script src="scripts/graph.js"></script>
 		<script>
-			var baseUrl = "query/?out=json";
-
-			var plot = function (div, type, startDate) {
-				var datestring = startDate.toISOString();
-				var url = baseUrl + "&type="+type+"&timegt="+datestring;
-
-				$.getJSON(url, function(data) {
-					var values = [];
-					var plotindices = {};
-					var i = 1;
-					var labels = ["Time"];
-
-				
-					for(var k = data.length -1; k >= 0; k --)
-					{	
-						if(! ("sensor"+data[k].sensor in plotindices))
-						{
-							labels[i] = "Sensor "+data[k].sensor;
-							plotindices["sensor"+data[k].sensor] = i ++;
-						}
-					}
-					for(var k = data.length -1; k >= 0; k --)
-					{
-						var d = new Date(data[k].time);
-						var row = [];
-						for(var j = 0; j < i; j++) row[j] = null;
-
-						row[0] = d;
-						row[ plotindices["sensor"+data[k].sensor] ] = data[k].value;
-						values.push(row);
-					}
-					var graph = new Dygraph(div, values,{ "labels": labels, connectSeparatedPoints: true } );
-				});
-			};
-
-			var producePlots = function() {
-				$(".plot").each(function () {
-					var type = $(this).attr("data-type");
-					var hours = $(this).attr("data-hours");
-
-					if(type == undefined || hours == undefined)
-					{
-						return;
-					}
-					
-					var time = new Date();
-					
-					time.setTime(time.getTime() + (time.getTimezoneOffset()*60*1000) - (1000 * 3600 * hours));
-					plot(this,type,time);
-				});
-			};
-		
-			$(document).ready(function() {
+			function updatePlots() {
 				producePlots();
+				setTimeout(updatePlots,60000);
+			}
+
+			$(document).ready(function() {
+				updatePlots();
 			});
 		</script>
+
+		<link rel="stylesheet" href="style.css" />
+
 	</head>
 
 	<body>
-		<div id='elec24' class='plot' data-type="electricity" data-hours="24"/>
+		<div id='maincontent'>
+		<div id='header'>
+			<h1>Graphs</h1>
+		</div>
+		<h1>Past Day</h1>
+			<h2>Electricity</h2>
+			<div class='plot' data-type="electricity" data-hours="24" ></div>
+			<h2>Temperature</h2>
+			<div class='plot' data-type="temperature" data-hours="24" ></div>
+			<h2>Humidity</h2>
+			<div class='plot' data-type="humidity" data-hours="24" ></div>
+
+		<h1>Past Week</h1>
+			<h2>Electricity</h2>
+			<div class='plot' data-type="electricity" data-hours="168" ></div>
+			<h2>Temperature</h2>
+			<div class='plot' data-type="temperature" data-hours="168" ></div>
+			<h2>Humidity</h2>
+			<div class='plot' data-type="humidity" data-hours="168" ></div>
+
+		<h1>Past Month</h1>
+			<h2>Electricity</h2>
+			<div class='plot' data-type="electricity" data-hours="672" ></div>
+			<h2>Temperature</h2>
+			<div class='plot' data-type="temperature" data-hours="672" ></div>
+			<h2>Humidity</h2>
+			<div class='plot' data-type="humidity" data-hours="672" ></div>
 		</div>
 	</body>
 </html>
