@@ -1,8 +1,8 @@
 var baseUrl = "query/?out=json";
 
-var plot = function (div, type, startDate) {
+var plot = function (div, type, startDate,aggregation) {
 	var datestring = startDate.toISOString();
-	var url = baseUrl + "&type="+type+"&timegt="+datestring;
+	var url = baseUrl + "&type="+type+"&timegt="+datestring+"&aggregation="+aggregation;
 
 	$.getJSON(url, function(data) {
 		var values = [];
@@ -19,14 +19,31 @@ var plot = function (div, type, startDate) {
 				plotindices["sensor"+data[k].sensor] = i ++;
 			}
 		}
+		
 		for(var k = data.length -1; k >= 0; k --)
 		{
 			var d = new Date(data[k].time);
 			var row = [];
-			for(var j = 0; j < i; j++) row[j] = null;
-
 			row[0] = d;
-			row[ plotindices["sensor"+data[k].sensor] ] = data[k].value;
+			for(var j = 1; j < i; j++)
+			{
+				if(plotindices["sensor"+data[k].sensor] == j)
+				{
+					row[j] = data[k].value;
+				}
+				else
+				{
+					if(k == data.length-1)
+					{
+						row[j] = null;
+					}
+					else
+					{
+						row[j] = values[values.length-1][j];
+					}
+				}
+			}
+
 			values.push(row);
 		}
 		var graph = new Dygraph(div, values,{ "legend":"always","labels": labels, connectSeparatedPoints: true } );
@@ -37,6 +54,7 @@ var producePlots = function() {
 	$(".plot").each(function () {
 		var type = $(this).attr("data-type");
 		var hours = $(this).attr("data-hours");
+		var aggregation = $(this).attr("data-aggregation");
 
 		if(type == undefined || hours == undefined)
 		{
@@ -46,6 +64,6 @@ var producePlots = function() {
 		var time = new Date();
 		
 		time.setTime(time.getTime() + (time.getTimezoneOffset()*60*1000) - (1000 * 3600 * hours));
-		plot(this,type,time);
+		plot(this,type,time,aggregation);
 	});
 };
