@@ -25,26 +25,33 @@ var plot = function (div, type, startDate,aggregation) {
 			var d = new Date(data[k].time);
 			var row = [];
 			row[0] = d;
-			for(var j = 1; j < i; j++)
+			
+			if(values.length > 0 && values[values.length-1][0].getTime() == d.getTime())
 			{
-				if(plotindices["sensor"+data[k].sensor] == j)
+				values[values.length-1][plotindices["sensor"+data[k].sensor]] = data[k].value;
+			}
+			else
+			{
+				for(var j = 1; j < i; j++)
 				{
-					row[j] = data[k].value;
-				}
-				else
-				{
-					if(k == data.length-1)
+					if(plotindices["sensor"+data[k].sensor] == j)
 					{
-						row[j] = null;
+						row[j] = data[k].value;
 					}
 					else
 					{
-						row[j] = values[values.length-1][j];
+						if(k == data.length-1)
+						{
+							row[j] = null;
+						}
+						else
+						{
+							row[j] = values[values.length-1][j];
+						}
 					}
 				}
+				values.push(row);
 			}
-
-			values.push(row);
 		}
 		var graph = new Dygraph(div, values,{ "legend":"always","labels": labels, connectSeparatedPoints: true } );
 	});
